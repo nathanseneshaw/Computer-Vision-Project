@@ -1,0 +1,5 @@
+# Virtual environment
+.venv/
+
+# Ruff linter cache
+.ruff_cache/
