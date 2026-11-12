@@ -3,3 +3,6 @@
 
 # Ruff linter cache
 .ruff_cache/
+
+# From-scratch YOLO checkpoints and plots
+models/yolo_scratch/
