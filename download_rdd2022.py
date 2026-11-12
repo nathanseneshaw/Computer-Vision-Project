@@ -5,7 +5,7 @@ from pathlib import Path
 URL = "https://ndownloader.figshare.com/files/38030910"
 SIZE = 13_264_172_619
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = Path(__file__).resolve().parent / "data"
 ZIP_PATH = DATA_DIR / "RDD2022.zip"
 OUT_DIR = DATA_DIR / "RDD2022"
 
