@@ -6,3 +6,11 @@
 
 # From-scratch YOLO checkpoints and plots
 models/yolo_scratch/
+
+# RDD2022 download and generated YOLO labels
+data/RDD2022/
+data/yolo/
+
+# Ultralytics runs and downloaded weights
+models/ultralytics/
+*.pt

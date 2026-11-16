@@ -11,7 +11,7 @@ from torchvision.ops import nms
 
 from data import RoadDamage
 from model import YOLO
-from train import OUTPUT_DIR
+from train_scratch import OUTPUT_DIR
 from voc_eval import voc_eval
 
 
