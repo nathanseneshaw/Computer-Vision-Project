@@ -14,10 +14,9 @@ if __name__ == '__main__':
     model = YOLO('yolo11s.pt')
     model.train(
         data=os.path.join(YOLO_DIR, 'potholes.yaml'),
-        imgsz=640,
+        imgsz=1024,
         epochs=100,
-        patience=30,
-        batch=16,
+        batch=-1,
         workers=4,
         project=OUTPUT_DIR,
         name='yolo11s_potholes',
