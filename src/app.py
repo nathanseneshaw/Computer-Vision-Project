@@ -35,8 +35,8 @@ def find_weights():
 
 
 # run the model on a PIL image and return a list of Detection
-def detect(model, image, confidence):
-    result = model.predict(image, conf=confidence, imgsz=IMAGE_SIZE, verbose=False)[0]
+def detect(model, image, confidence, image_size):
+    result = model.predict(image, conf=confidence, imgsz=image_size, verbose=False)[0]
     detections = []
     for box, conf, cls in zip(result.boxes.xyxy.tolist(), result.boxes.conf.tolist(), result.boxes.cls.tolist()):
         detections.append(Detection(name=str(model.names[int(cls)]), confidence=float(conf), box=tuple(box)))
@@ -81,11 +81,13 @@ def summarize(assessment: Assessment, confidence):
 
 
 def make_predict_fn(model):
-    def predict(image, confidence):
+    def predict(image, confidence, image_size):
         if image is None:
             return None, 'Upload an image to get started.', []
         image = ImageOps.exif_transpose(image).convert('RGB')
-        assessment = assess_image(detect(model, image, confidence), *image.size)
+        # YOLO needs a multiple of 32, so round to the nearest one
+        image_size = max(32, int(round((image_size or IMAGE_SIZE) / 32)) * 32)
+        assessment = assess_image(detect(model, image, confidence, image_size), *image.size)
         rows = [[d.label, '%.2f' % d.confidence, '%.2f%%' % (d.area_fraction * 100), d.level]
                 for d in assessment.detections]
         return annotate(image, assessment), summarize(assessment, confidence), rows
@@ -96,13 +98,14 @@ def build_ui(model):
     import gradio as gr
 
     with gr.Blocks(title='Road damage detector') as ui:
-        gr.Markdown('# Road Damage Detector Project\n'
-                    'Input a road photo and our model will look for potential damage.')
         with gr.Row():
             with gr.Column():
                 image_in = gr.Image(type='pil', label='Road image')
-                confidence = gr.Slider(0.05, 0.95, value=0.25, step=0.05, label='Confidence threshold',
-                                       info='Lower finds more damage but also more false alarms')
+                with gr.Row():
+                    confidence = gr.Slider(0.05, 0.95, value=0.25, step=0.05, label='Confidence threshold',
+                                           info='How strict detection is')
+                    image_size = gr.Number(value=IMAGE_SIZE, precision=0, minimum=32, maximum=2048,
+                                           label='Image size', info='Set this to imgsz you trained with')
                 button = gr.Button('Analyze', variant='primary')
             with gr.Column():
                 image_out = gr.Image(label='Detected damage', interactive=False)
@@ -110,8 +113,8 @@ def build_ui(model):
         table = gr.Dataframe(headers=['Damage type', 'Confidence', 'Image area', 'Severity'],
                              label='Detections (worst first)', interactive=False)
         predict = make_predict_fn(model)
-        button.click(predict, [image_in, confidence], [image_out, verdict, table])
-        image_in.upload(predict, [image_in, confidence], [image_out, verdict, table])
+        button.click(predict, [image_in, confidence, image_size], [image_out, verdict, table])
+        image_in.upload(predict, [image_in, confidence, image_size], [image_out, verdict, table])
     return ui
 
 
