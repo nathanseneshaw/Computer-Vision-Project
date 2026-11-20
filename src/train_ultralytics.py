@@ -15,9 +15,11 @@ if __name__ == '__main__':
     model.train(
         data=os.path.join(YOLO_DIR, 'potholes.yaml'),
         imgsz=1024,
-        epochs=100,
+        epochs=150,
         batch=-1,
         workers=4,
+        cos_lr=True,
+        scale=0.7,
         project=OUTPUT_DIR,
         name='yolo11s_potholes',
     )
