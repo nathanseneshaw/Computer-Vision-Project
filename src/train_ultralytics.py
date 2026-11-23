@@ -11,10 +11,10 @@ OUTPUT_DIR = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__fil
 
 
 if __name__ == '__main__':
-    model = YOLO('yolo11s.pt')
+    model = YOLO('yolo11m.pt')
     model.train(
         data=os.path.join(YOLO_DIR, 'potholes.yaml'),
-        imgsz=1024,
+        imgsz=1280,
         epochs=150,
         batch=-1,
         workers=4,
